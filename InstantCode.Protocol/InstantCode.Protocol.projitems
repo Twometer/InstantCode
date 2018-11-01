@@ -12,7 +12,9 @@
     <Folder Include="$(MSBuildThisFileDirectory)Packets\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)IO\PacketSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IPacket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\PacketBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\FixedDataStream.cs" />
   </ItemGroup>
 </Project>

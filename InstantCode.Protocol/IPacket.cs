@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using InstantCode.Protocol.IO;
 
 namespace InstantCode.Protocol
 {
-    interface IPacket
+    public interface IPacket
     {
+        int Id { get; }
 
         void Read(PacketBuffer buffer);
 
