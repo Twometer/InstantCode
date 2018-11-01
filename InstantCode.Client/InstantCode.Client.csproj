@@ -55,6 +55,12 @@
     <Content Include="index.html" />
     <Content Include="stylesheet.css" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InstantCode.ClientProtocol\InstantCode.ClientProtocol.csproj">
+      <Project>{58446b48-d555-4a94-bae7-49b09e16254f}</Project>
+      <Name>InstantCode.ClientProtocol</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
