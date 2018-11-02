@@ -1,4 +1,6 @@
 # InstantCode
+[![Build status](https://ci.appveyor.com/api/projects/status/lf1dc3g9is1k9evf?svg=true)](https://ci.appveyor.com/project/Twometer/instantcode)
+
 _Two coders, one project, in realtime._ InstantCode makes working together
 on a Visual Studio project in realtime easy.
 
