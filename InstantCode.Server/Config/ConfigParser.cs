@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using InstantCode.Server.Utility;
 using Newtonsoft.Json;
 
 namespace InstantCode.Server.Config
 {
     public class ConfigParser
     {
+        private const string Tag = "ConfigParser";
+
         private readonly string path;
         private string json;
 
@@ -19,7 +22,7 @@ namespace InstantCode.Server.Config
         {
             if (json == "")
             {
-                Console.WriteLine("Config file not found, creating deafult config...");
+                Log.I(Tag, "Config file not found, creating deafult config...");
                 json = JsonConvert.SerializeObject(new ServerConfig());
                 File.WriteAllText(path, json);
             }

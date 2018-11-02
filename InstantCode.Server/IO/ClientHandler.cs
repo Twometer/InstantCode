@@ -5,11 +5,14 @@ using InstantCode.Protocol.Handler;
 using InstantCode.Protocol.IO;
 using InstantCode.Protocol.Packets;
 using InstantCode.Server.Crypto;
+using InstantCode.Server.Utility;
 
 namespace InstantCode.Server.IO
 {
     public class ClientHandler
     {
+        private const string Tag = "ClientHandler";
+
         private readonly TcpClient tcpClient;
         private readonly INetHandler netHandler;
         private readonly FixedDataStream dataStream;
@@ -38,7 +41,7 @@ namespace InstantCode.Server.IO
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine();
+                    Log.I(Tag, "Client " + Util.GetIp(tcpClient) + " lost connection: " + e);
                     break;
                 }
             }
