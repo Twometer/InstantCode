@@ -56,9 +56,9 @@
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\InstantCode.ClientProtocol\InstantCode.ClientProtocol.csproj">
-      <Project>{58446b48-d555-4a94-bae7-49b09e16254f}</Project>
-      <Name>InstantCode.ClientProtocol</Name>
+    <ProjectReference Include="..\InstantCode.Protocol\InstantCode.Protocol.csproj">
+      <Project>{d5b53cd6-c7d5-41fc-8ee3-7f17d70f068d}</Project>
+      <Name>InstantCode.Protocol</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
