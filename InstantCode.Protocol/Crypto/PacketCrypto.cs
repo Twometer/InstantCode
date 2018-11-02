@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 
-namespace InstantCode.Server.Crypto
+namespace InstantCode.Protocol.Crypto
 {
     public class PacketCrypto
     {
@@ -13,20 +10,20 @@ namespace InstantCode.Server.Crypto
             var buffer = new byte[1024];
             using (var outputStream = new MemoryStream()) {
                 int read;
-                while ((read = stream.Read(buffer)) > 0)
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
                     outputStream.Write(buffer, 0, read);
                 return outputStream.ToArray();
             }
         }
 
-        public static byte[] Decrypt(byte[] encrypted, byte[] iv)
+        public static byte[] Decrypt(byte[] encrypted, byte[] key, byte[] iv)
         {
             using (var aes = Aes.Create())
             {
                 if (aes == null)
                     throw new CryptographicException("Failed to initialize cryptographic algorithm");
 
-                var transform = aes.CreateDecryptor(CredentialStore.KeyHash, iv);
+                var transform = aes.CreateDecryptor(key, iv);
 
                 using (var inputStream = new MemoryStream(encrypted))
                 using (var cryptoStream = new CryptoStream(inputStream, transform, CryptoStreamMode.Read))
@@ -34,7 +31,7 @@ namespace InstantCode.Server.Crypto
             }
         }
 
-        public static byte[] Encrypt(byte[] plaintext, out byte[] iv)
+        public static byte[] Encrypt(byte[] plaintext, byte[] key, out byte[] iv)
         {
             using (var aes = Aes.Create())
             {
@@ -44,7 +41,7 @@ namespace InstantCode.Server.Crypto
                 aes.GenerateIV();
                 iv = aes.IV;
 
-                var transform = aes.CreateEncryptor(CredentialStore.KeyHash, aes.IV);
+                var transform = aes.CreateEncryptor(key, aes.IV);
 
                 using (var outputStream = new MemoryStream())
                 {

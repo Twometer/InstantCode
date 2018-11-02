@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Net.Sockets;
 using InstantCode.Protocol;
+using InstantCode.Protocol.Crypto;
 using InstantCode.Protocol.Handler;
 using InstantCode.Protocol.IO;
 using InstantCode.Protocol.Packets;
-using InstantCode.Server.Crypto;
+using InstantCode.Server.Config;
 using InstantCode.Server.Utility;
 
 namespace InstantCode.Server.IO
@@ -37,7 +38,7 @@ namespace InstantCode.Server.IO
                 {
                     var iv = ReadRawArray();
                     var content = ReadRawArray();
-                    HandlePacket(new PacketBuffer(PacketCrypto.Decrypt(content, iv)));
+                    HandlePacket(new PacketBuffer(PacketCrypto.Decrypt(content, CredentialStore.KeyHash, iv)));
                 }
                 catch (Exception e)
                 {
@@ -78,17 +79,8 @@ namespace InstantCode.Server.IO
         // all arrays are length-prefixed
         public void SendPacket(IPacket packet)
         {
-            var innerBuffer = new PacketBuffer();
-            innerBuffer.WriteInt(packet.Id);
-            innerBuffer.WriteArray(PacketSerializer.Serialize(packet));
-
-            var encryptedPacket = PacketCrypto.Encrypt(innerBuffer.ToArray(), out var iv);
-            var outerBuffer = new PacketBuffer();
-            outerBuffer.WriteArray(iv);
-            outerBuffer.WriteArray(encryptedPacket);
-
-            var finalPacket = outerBuffer.ToArray();
-            dataStream.Write(finalPacket, 0, finalPacket.Length);
+            var serialized = PacketSerializer.Serialize(packet, CredentialStore.KeyHash);
+            dataStream.Write(serialized, 0, serialized.Length);
         }
     }
 }

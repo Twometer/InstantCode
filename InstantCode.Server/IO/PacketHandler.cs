@@ -17,7 +17,7 @@ namespace InstantCode.Server.IO
 
         public void HandleP00Login(P00Login login)
         {
-            throw new NotImplementedException();
+            clientHandler.SendPacket(new P00Login());
         }
     }
 }

@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using InstantCode.Protocol.Crypto;
 using InstantCode.Server.Config;
-using InstantCode.Server.Crypto;
 using InstantCode.Server.IO;
 using InstantCode.Server.Utility;
 
