@@ -1,4 +1,4 @@
-# InstantCode
+# ![InstantCode Logo](https://github.com/Twometer/InstantCode/blob/master/Artwork/Logo64NoPadding.png?raw=true) InstantCode
 [![Build status](https://ci.appveyor.com/api/projects/status/lf1dc3g9is1k9evf?svg=true)](https://ci.appveyor.com/project/Twometer/instantcode)
 
 _Two coders, one project, in realtime._ InstantCode makes working together
