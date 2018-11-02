@@ -35,14 +35,14 @@ namespace InstantCode.Server.IO
             ClientData = new ClientData();
         }
 
-        public void StartReading()
+        public async void StartReading()
         {
             Log.I(Tag, "Client " + Util.GetIp(tcpClient) + " connected");
             while (tcpClient.Connected)
             {
                 try
                 {
-                    HandlePacket(PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash));
+                    HandlePacket(await PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash));
                 }
                 catch (Exception e)
                 {
