@@ -18,21 +18,61 @@ namespace InstantCode.Server.IO
             this.clientHandler = clientHandler;
         }
 
-        public void HandleP00Login(P00Login login)
+        public void HandleP00Login(P00Login p00Login)
         {
             foreach (var client in ClientManager.ConnectedClients)
             {
-                if (!string.Equals(client.ClientData.Username, login.Username, StringComparison.OrdinalIgnoreCase)) continue;
+                if (!string.Equals(client.ClientData.Username, p00Login.Username, StringComparison.OrdinalIgnoreCase)) continue;
                 Log.I(Tag, "Rejected login attempt for " + client.Ip + ": Username already taken");
                 clientHandler.SendPacket(new P01State(ReasonCode.UsernameTaken));
                 return;
             }
 
-            clientHandler.ClientData.Username = login.Username;
+            clientHandler.ClientData.Username = p00Login.Username;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
         }
 
-        public void HandleP01State(P01State state)
+        public void HandleP01State(P01State p01State)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP02NewSession(P02NewSession p02NewSession)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP03CloseSession(P03CloseSession p03CloseSession)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP04OpenStream(P04OpenStream p04OpenStream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP05StreamData(P05StreamData p05StreamData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP06CloseStream(P06CloseStream p06CloseStream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP07CodeChange(P07CodeChange p07CodeChange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP08CursorPosition(P08CursorPosition p08CursorPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleP09Save(P09Save p09Save)
         {
             throw new NotImplementedException();
         }

@@ -22,7 +22,7 @@ is randomized for each packet and prepended to the final packet.
 - Boolean (one byte)
 - Integer (four bytes)
 - String (UTF-8 encoded and length-prefixed)
-- Byte Array (always length-prefixed)
+- Array (always length-prefixed)
 
 ### Packets
 #### 0x00 Login (C->S)
@@ -41,12 +41,12 @@ Used for state information, such as "Login OK" or "Username already taken". The 
 - 0x00 Ok
 - 0x01 UsernameTaken
 
-#### 0x02 CreateSession (C->S)
+#### 0x02 NewSession (C->S)
 Creates a coding session, responds with a `0x01 State` packet. If creation was successful,
 a session id is returned in the State packet's payload, and the client starts transmitting
 project data.
 ```
-<String[] Participants>
+<String ProjectName><String[] Participants>
 ```
 
 #### 0x03 CloseSession (C->S)
@@ -76,17 +76,17 @@ No content
 #### 0x07 CodeChange (C<->S)
 Notifys other clients in a session about code changes.
 ```
-<String Sender><String File><Int Index><String char>
+<Int SessionId><String Sender><String File><Int Index><String Char>
 ```
 
 #### 0x08 CursorPosition (C<->S)
 Notifys other clients in a session about cursor position changes.
 ```
-<String Sender><String File><Int NewIndex>
+<Int SessionId><String Sender><String File><Int NewIndex>
 ```
 
 #### 0x09 Save (C<->S)
-Forces everyone to save the project.
+Forces everyone in a session to save the project.
 ```
-No content
+<Int SessionId>
 ```
