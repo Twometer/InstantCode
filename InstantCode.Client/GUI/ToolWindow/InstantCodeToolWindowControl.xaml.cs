@@ -25,7 +25,7 @@ namespace InstantCode.Client.GUI.ToolWindow
             var icClient = new IcClient();
             icClient.Connect(d.ServerIp, 0xC0DE, d.ServerPassword);
             icClient.SendPacket(new P00Login { Username = d.ServerUsername });
-            icClient.StartReading();
+            icClient.StartReadingAsync();
         }
     }
 }

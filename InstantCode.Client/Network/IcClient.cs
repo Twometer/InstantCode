@@ -37,17 +37,13 @@ namespace InstantCode.Client.Network
             dataStream.Write(serializedPacket, 0, serializedPacket.Length);
         }
 
-        public void StartReading()
+        public async Task StartReadingAsync()
         {
-            // TODO: This is not how you should use the Tasks API
-            Task.Run(() =>
+            while (tcpClient.Connected)
             {
-                while (tcpClient.Connected)
-                {
-                    var packetBuf = PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash);
-                    HandlePacket(packetBuf);
-                }
-            });
+                var packetBuf = await PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash);
+                HandlePacket(packetBuf);
+            }
         }
 
         private void HandlePacket(PacketBuffer outerBuffer)

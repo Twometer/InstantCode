@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using InstantCode.Protocol.Crypto;
 
 namespace InstantCode.Protocol.IO
 {
     public class PacketSerializer
     {
-        public static PacketBuffer Deserialize(FixedDataStream dataStream, byte[] cryptoKey)
+        public static async Task<PacketBuffer> Deserialize(FixedDataStream dataStream, byte[] cryptoKey)
         {
-            var iv = ReadRawArray(dataStream);
-            var content = ReadRawArray(dataStream);
+            var iv = await ReadRawArray(dataStream);
+            var content = await ReadRawArray(dataStream);
             return new PacketBuffer(PacketCrypto.Decrypt(content, CredentialStore.KeyHash, iv));
         }
 
@@ -35,13 +38,13 @@ namespace InstantCode.Protocol.IO
             return buffer.ToArray();
         }
 
-        private static byte[] ReadRawArray(FixedDataStream dataStream)
+        private static async Task<byte[]> ReadRawArray(Stream dataStream)
         {
             var raw = new byte[4];
-            dataStream.Read(raw, 0, raw.Length);
+            await dataStream.ReadAsync(raw, 0, raw.Length);
             var len = BitConverter.ToInt32(raw, 0);
             var array = new byte[len];
-            dataStream.Read(array, 0, array.Length);
+            await dataStream.ReadAsync(array, 0, array.Length);
             return array;
         }
     }
