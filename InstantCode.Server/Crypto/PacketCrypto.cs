@@ -8,6 +8,32 @@ namespace InstantCode.Server.Crypto
 {
     public class PacketCrypto
     {
+        private static byte[] ReadToEnd(Stream stream)
+        {
+            var buffer = new byte[1024];
+            using (var outputStream = new MemoryStream()) {
+                int read;
+                while ((read = stream.Read(buffer)) > 0)
+                    outputStream.Write(buffer, 0, read);
+                return outputStream.ToArray();
+            }
+        }
+
+        public static byte[] Decrypt(byte[] encrypted, byte[] iv)
+        {
+            using (var aes = Aes.Create())
+            {
+                if (aes == null)
+                    throw new CryptographicException("Failed to initialize cryptographic algorithm");
+
+                var transform = aes.CreateDecryptor(CredentialStore.KeyHash, iv);
+
+                using (var inputStream = new MemoryStream(encrypted))
+                using (var cryptoStream = new CryptoStream(inputStream, transform, CryptoStreamMode.Read))
+                    return ReadToEnd(cryptoStream);
+            }
+        }
+
         public static byte[] Encrypt(byte[] plaintext, out byte[] iv)
         {
             using (var aes = Aes.Create())

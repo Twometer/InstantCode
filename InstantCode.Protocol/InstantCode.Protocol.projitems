@@ -9,12 +9,11 @@
     <Import_RootNamespace>InstantCode.Protocol</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Packets\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Handler\INetHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\PacketSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\PacketBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\FixedDataStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\P00Login.cs" />
   </ItemGroup>
 </Project>

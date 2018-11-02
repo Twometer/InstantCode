@@ -1,4 +1,5 @@
-﻿using InstantCode.Protocol.IO;
+﻿using InstantCode.Protocol.Handler;
+using InstantCode.Protocol.IO;
 
 namespace InstantCode.Protocol
 {
@@ -9,6 +10,8 @@ namespace InstantCode.Protocol
         void Read(PacketBuffer buffer);
 
         void Write(PacketBuffer buffer);
+
+        void Handle(INetHandler netHandler);
 
     }
 }
