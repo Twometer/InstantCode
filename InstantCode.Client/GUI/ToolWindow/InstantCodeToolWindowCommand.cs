@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace InstantCode.Client.GUI
+namespace InstantCode.Client.GUI.ToolWindow
 {
     /// <summary>
     /// Command handler

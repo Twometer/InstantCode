@@ -23,6 +23,7 @@ namespace InstantCode.Client.GUI
     {
         public string ServerName { get; private set; }
         public string ServerIp { get; private set; }
+        public string ServerUsername { get; private set; }
         public string ServerPassword { get; private set; }
 
         public AddServerDialog()
@@ -34,6 +35,7 @@ namespace InstantCode.Client.GUI
         {
             ServerName = ServerNameBox.Text;
             ServerIp = ServerIpBox.Text;
+            ServerUsername = ServerUsrBox.Text;
             ServerPassword = ServerPwdBox.Password;
             Close();
         }

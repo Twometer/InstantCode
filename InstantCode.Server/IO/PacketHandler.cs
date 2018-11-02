@@ -20,8 +20,21 @@ namespace InstantCode.Server.IO
 
         public void HandleP00Login(P00Login login)
         {
-            Log.I(Tag, "User " + login.Username + " logged in");
-            clientHandler.SendPacket(new P00Login() {Username = login.Username});
+            foreach (var client in ClientManager.ConnectedClients)
+            {
+                if (!string.Equals(client.ClientData.Username, login.Username, StringComparison.OrdinalIgnoreCase)) continue;
+                Log.I(Tag, "Rejected login attempt for " + client.Ip + ": Username already taken");
+                clientHandler.SendPacket(new P01State(ReasonCode.UsernameTaken));
+                return;
+            }
+
+            clientHandler.ClientData.Username = login.Username;
+            clientHandler.SendPacket(new P01State(ReasonCode.Ok));
+        }
+
+        public void HandleP01State(P01State state)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -12,6 +12,16 @@ namespace InstantCode.Protocol.Packets
 
         public string Username { get; set; }
 
+        public P00Login()
+        {
+
+        }
+
+        public P00Login(string username)
+        {
+            Username = username;
+        }
+
         public void Read(PacketBuffer buffer)
         {
             Username = buffer.ReadString();

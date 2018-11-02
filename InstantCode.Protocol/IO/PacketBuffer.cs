@@ -34,6 +34,11 @@ namespace InstantCode.Protocol.IO
             WriteArray(Encoding.UTF8.GetBytes(data));
         }
 
+        public void WriteBool(bool b)
+        {
+            memoryStream.WriteByte((byte) (b ? 1 : 0));
+        }
+
         public int ReadInt()
         {
             return BitConverter.ToInt32(ReadRaw(4), 0);
@@ -47,6 +52,11 @@ namespace InstantCode.Protocol.IO
         public string ReadString()
         {
             return Encoding.UTF8.GetString(ReadArray());
+        }
+
+        public bool ReadBool()
+        {
+            return memoryStream.ReadByte() == 1;
         }
 
         private byte[] ReadRaw(int len)

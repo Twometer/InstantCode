@@ -9,6 +9,7 @@ namespace InstantCode.Protocol.Handler
     {
 
         void HandleP00Login(P00Login login);
+        void HandleP01State(P01State state);
 
     }
 }

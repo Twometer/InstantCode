@@ -1,15 +1,9 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using InstantCode.Client.Network;
-using InstantCode.Protocol.Crypto;
 using InstantCode.Protocol.Packets;
-using Microsoft.Internal.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
-namespace InstantCode.Client.GUI
+namespace InstantCode.Client.GUI.ToolWindow
 {
     /// <summary>
     /// Interaction logic for InstantCodeToolWindowControl.
@@ -30,7 +24,7 @@ namespace InstantCode.Client.GUI
             d.ShowModal();
             var icClient = new IcClient();
             icClient.Connect(d.ServerIp, 0xC0DE, d.ServerPassword);
-            icClient.SendPacket(new P00Login() { Username = "test" });
+            icClient.SendPacket(new P00Login { Username = d.ServerUsername });
         }
     }
 }
