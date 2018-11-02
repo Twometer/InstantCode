@@ -42,9 +42,7 @@ namespace InstantCode.Server.IO
             {
                 try
                 {
-                    var iv = ReadRawArray();
-                    var content = ReadRawArray();
-                    HandlePacket(new PacketBuffer(PacketCrypto.Decrypt(content, CredentialStore.KeyHash, iv)));
+                    HandlePacket(PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash));
                 }
                 catch (Exception e)
                 {
@@ -67,16 +65,6 @@ namespace InstantCode.Server.IO
                 pack.Handle(netHandler);
                 break;
             }
-        }
-
-        private byte[] ReadRawArray()
-        {
-            var raw = new byte[4];
-            dataStream.Read(raw, 0, raw.Length);
-            var len = BitConverter.ToInt32(raw);
-            var array = new byte[len];
-            dataStream.Read(array, 0, array.Length);
-            return array;
         }
 
         // Packet layout: | IV | Packet Id | Packet content | 

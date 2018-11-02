@@ -30,6 +30,7 @@ namespace InstantCode.Server.IO
 
             clientHandler.ClientData.Username = p00Login.Username;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
+            Log.I(Tag, clientHandler.Ip + " logged in with username '" + p00Login.Username + "'");
         }
 
         public void HandleP01State(P01State p01State)

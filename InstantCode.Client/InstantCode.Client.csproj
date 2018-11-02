@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="GUI\ToolWindow\InstantCodeToolWindowPackage.cs" />
     <Compile Include="Network\IcClient.cs" />
+    <Compile Include="Network\PacketHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
