@@ -32,6 +32,7 @@ namespace InstantCode.Server.IO
 
         public void StartReading()
         {
+            Log.I(Tag, "Client " + Util.GetIp(tcpClient) + " connected");
             while (tcpClient.Connected)
             {
                 try
