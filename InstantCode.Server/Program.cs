@@ -15,6 +15,8 @@ namespace InstantCode.Server
 
         private static readonly string ConfigPath = Path.Combine(Environment.CurrentDirectory, "config.json");
 
+        public static readonly string UserDirectory = Path.Combine(Environment.CurrentDirectory, "users");
+
         private static void Main(string[] args)
         {
             var config = ConfigParser.FromFile(ConfigPath).EnsureCreated().Parse();
@@ -30,6 +32,12 @@ namespace InstantCode.Server
                 var client = listener.AcceptTcpClient();
                 ClientManager.AcceptClient(client);
             }
+        }
+
+        private static void SetupFileSystem()
+        {
+            if (!Directory.Exists(UserDirectory))
+                Directory.CreateDirectory(UserDirectory);
         }
     }
 }

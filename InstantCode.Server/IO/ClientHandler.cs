@@ -37,7 +37,7 @@ namespace InstantCode.Server.IO
 
         public async void StartReading()
         {
-            Log.I(Tag, "Client " + Util.GetIp(tcpClient) + " connected");
+            Log.I(Tag, $"Client {Ip} connected");
             while (tcpClient.Connected)
             {
                 try
@@ -46,7 +46,7 @@ namespace InstantCode.Server.IO
                 }
                 catch (Exception e)
                 {
-                    Log.I(Tag, "Client " + Util.GetIp(tcpClient) + " lost connection: " + e);
+                    Log.I(Tag, $"Client {Ip} lost connection: " + e);
                     break;
                 }
             }

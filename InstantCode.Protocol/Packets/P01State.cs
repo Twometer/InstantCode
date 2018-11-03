@@ -50,6 +50,7 @@ namespace InstantCode.Protocol.Packets
     public enum ReasonCode
     {
         Ok,
-        UsernameTaken
+        UsernameTaken,
+        NoPermission
     }
 }

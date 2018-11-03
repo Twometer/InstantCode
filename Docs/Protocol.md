@@ -40,6 +40,7 @@ Used for state information, such as "Login OK" or "Username already taken". The 
 ##### Reason codes
 - 0x00 Ok
 - 0x01 UsernameTaken
+- 0x02 NoPermission
 
 #### 0x02 NewSession (C->S)
 Creates a coding session, responds with a `0x01 State` packet. If creation was successful,
@@ -50,7 +51,8 @@ project data.
 ```
 
 #### 0x03 CloseSession (C->S)
-Closes a coding session.
+Closes a coding session. If you try to close a session that's not yours, the server
+sends a `0x01 State` packet with the reason code `0x02 NoPermission`
 ```
 <Int SessionId>
 ```

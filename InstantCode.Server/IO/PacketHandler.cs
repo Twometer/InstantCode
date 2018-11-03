@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using InstantCode.Protocol.Handler;
+using InstantCode.Protocol.IO;
 using InstantCode.Protocol.Packets;
+using InstantCode.Server.Model;
 using InstantCode.Server.Utility;
 
 namespace InstantCode.Server.IO
@@ -40,42 +43,52 @@ namespace InstantCode.Server.IO
 
         public void HandleP02NewSession(P02NewSession p02NewSession)
         {
-            throw new NotImplementedException();
+            var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
+            ClientManager.ForSession(session, handler => handler.SendPacket(p02NewSession));
+            clientHandler.SendPacket(new P01State(ReasonCode.Ok, session.Id));
         }
 
         public void HandleP03CloseSession(P03CloseSession p03CloseSession)
         {
-            throw new NotImplementedException();
+            if (p03CloseSession.SessionId != clientHandler.ClientData.CurrentSessionId)
+            {
+                clientHandler.SendPacket(new P01State(ReasonCode.NoPermission));
+                return;
+            }
+            ClientManager.ForSession(SessionManager.Find(p03CloseSession.SessionId), handler => handler.SendPacket(p03CloseSession));
+            clientHandler.SendPacket(new P01State(ReasonCode.Ok));
         }
 
         public void HandleP04OpenStream(P04OpenStream p04OpenStream)
         {
-            throw new NotImplementedException();
+            var fileStream = File.Open(clientHandler.ClientData.CurrentSession.DataPath, FileMode.Create, FileAccess.Write);
+            clientHandler.ClientData.CurrentSession.DataTransmission = new DataTransmission(fileStream, p04OpenStream.DataLength);
         }
 
         public void HandleP05StreamData(P05StreamData p05StreamData)
         {
-            throw new NotImplementedException();
+            clientHandler.ClientData.CurrentSession.DataTransmission?.Stream?.Write(p05StreamData.Data);
         }
 
         public void HandleP06CloseStream(P06CloseStream p06CloseStream)
         {
-            throw new NotImplementedException();
+            clientHandler.ClientData.CurrentSession.DataTransmission?.Close();
         }
 
         public void HandleP07CodeChange(P07CodeChange p07CodeChange)
         {
-            throw new NotImplementedException();
+            ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p07CodeChange));
         }
 
         public void HandleP08CursorPosition(P08CursorPosition p08CursorPosition)
         {
-            throw new NotImplementedException();
+            ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p08CursorPosition));
         }
 
         public void HandleP09Save(P09Save p09Save)
         {
-            throw new NotImplementedException();
+            ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p09Save));
         }
+
     }
 }
