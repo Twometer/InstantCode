@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InstantCode.Server.Config
+﻿namespace InstantCode.Server.Config
 {
     public class ServerConfig
     {

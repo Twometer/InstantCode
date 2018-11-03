@@ -1,17 +1,14 @@
-﻿<UserControl x:Class="InstantCode.Client.GUI.ToolWindow.InstantCodeToolWindowControl"
+﻿<UserControl x:Class="InstantCode.Client.GUI.Pages.ConnectedPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
-             mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Name="MyToolWindow">
-
-   <ContentPresenter Name="ContentPresenter" />
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Label Name="Header" FontWeight="Bold">Test</Label>
+    </Grid>
 </UserControl>
-
-
-

@@ -6,8 +6,17 @@
              xmlns:local="clr-namespace:InstantCode.Client.GUI"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              mc:Ignorable="d" 
-                         Title="Add Server"
+                         WindowStartupLocation="CenterOwner"
+                         Title="InstantCode"
                          SizeToContent="WidthAndHeight">
+    <platformUi:DialogWindow.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </platformUi:DialogWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -36,8 +45,8 @@
         <PasswordBox Margin="5" Grid.Column="1" Grid.Row="4" Name="ServerPwdBox" />
 
         <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Margin="5" Padding="25,5" Click="Button_Click">Add</Button>
-            <Button Name="CancelButton" Margin="5" Padding="25,5" Click="CancelButton_OnClick">Cancel</Button>
+            <Button Margin="5" Padding="0" Click="Button_Click">Add</Button>
+            <Button Name="CancelButton" Margin="5" Padding="0" Click="CancelButton_OnClick">Cancel</Button>
         </StackPanel>
     </Grid>
 </platformUi:DialogWindow>

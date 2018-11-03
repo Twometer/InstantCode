@@ -1,31 +1,19 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using InstantCode.Client.Network;
-using InstantCode.Protocol.Packets;
+﻿using System.Windows.Controls;
+using InstantCode.Client.GUI.Pages;
 
 namespace InstantCode.Client.GUI.ToolWindow
 {
-    /// <summary>
-    /// Interaction logic for InstantCodeToolWindowControl.
-    /// </summary>
-    public partial class InstantCodeToolWindowControl : UserControl
+    public partial class InstantCodeToolWindowControl : UserControl, IPageSwitcher
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InstantCodeToolWindowControl"/> class.
-        /// </summary>
         public InstantCodeToolWindowControl()
         {
             this.InitializeComponent();
+            SwitchPage(new ServerListPage(this));
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public void SwitchPage(UserControl newPage)
         {
-            var d = new AddServerDialog();
-            d.ShowModal();
-            var icClient = new IcClient();
-            icClient.Connect(d.ServerIp, 0xC0DE, d.ServerPassword);
-            icClient.SendPacket(new P00Login { Username = d.ServerUsername });
-            icClient.StartReadingAsync();
+            ContentPresenter.Content = newPage;
         }
     }
 }

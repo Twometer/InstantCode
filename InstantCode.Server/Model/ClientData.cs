@@ -1,6 +1,4 @@
-﻿using InstantCode.Protocol.IO;
-
-namespace InstantCode.Server.Model
+﻿namespace InstantCode.Server.Model
 {
     public class ClientData
     {

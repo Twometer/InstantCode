@@ -5,7 +5,6 @@ using InstantCode.Protocol.Crypto;
 using InstantCode.Protocol.Handler;
 using InstantCode.Protocol.IO;
 using InstantCode.Protocol.Packets;
-using InstantCode.Server.Config;
 using InstantCode.Server.Model;
 using InstantCode.Server.Utility;
 
