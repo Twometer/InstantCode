@@ -1,13 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Windows.Controls;
 using EnvDTE;
 using InstantCode.Client.GUI.Model;
 using InstantCode.Client.Network;
-using InstantCode.Client.Utils;
 using InstantCode.Protocol.Packets;
 using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace InstantCode.Client.GUI.Pages
 {
@@ -40,11 +41,11 @@ namespace InstantCode.Client.GUI.Pages
 
         private async void OpenSessionButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var progressDialog = new ProgressDialog("Creating session...", () => { });
+            var progressDialog = new ProgressDialog("Creating session...", () => { }, true);
             progressDialog.Show();
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var dte = (DTE) Package.GetGlobalService(typeof(DTE));
+            var dte = (DTE)Package.GetGlobalService(typeof(DTE));
             var solution = dte?.Solution;
 
             if (solution == null || !solution.IsOpen)
@@ -73,10 +74,59 @@ namespace InstantCode.Client.GUI.Pages
             }
             InstantCodeClient.Instance.CurrentSessionId = statePacket.Payload;
 
-            progressDialog.StatusMessage = "Transmitting project...";
+            progressDialog.StatusMessage = "Compressing project...";
             var solutionFolder = new FileInfo(solution.FileName).Directory;
+            var zipFile = new FileInfo(Path.Combine(solutionFolder.Parent.FullName, $"{solutionFolder.Name}{statePacket.Payload:X}.ic.zip"));
+            ZipSolution(solutionFolder.FullName, zipFile.FullName);
+
+            progressDialog.StatusMessage = "Transmitting project...";
+            progressDialog.IsIntermediate = false;
+            await TransmitAsync(zipFile, p => progressDialog.Value = p);
+            progressDialog.Close();
         }
 
+        private static void ZipSolution(string solutionFolderPath, string zipFilePath)
+        {
+            using (var zipToOpen = new FileStream(zipFilePath, FileMode.Create))
+            using (var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+            {
+                foreach (var file in Directory.GetFiles(solutionFolderPath, "*", SearchOption.AllDirectories))
+                {
+                    var entryName = file.Substring(solutionFolderPath.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    var entry = archive.CreateEntry(entryName);
+                    entry.LastWriteTime = File.GetLastWriteTime(file);
+                    using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                    using (var stream = entry.Open())
+                        fs.CopyTo(stream, 81920);
+                }
+            }
+        }
+
+        private async Task TransmitAsync(FileInfo zipFile, Action<int> progressChanged)
+        {
+            var file = zipFile.OpenRead();
+            InstantCodeClient.Instance.SendPacket(new P04OpenStream((int)zipFile.Length));
+            await InstantCodeClient.Instance.WaitForReplyAsync<P01State>();
+
+            var transmitted = 0;
+            var buffer = new byte[8192];
+            while (true)
+            {
+                var read = await file.ReadAsync(buffer, 0, buffer.Length);
+                if (read < 0)
+                    break;
+                transmitted += read;
+
+                var sendBuffer = new byte[read];
+                Array.Copy(buffer, 0, sendBuffer, 0, sendBuffer.Length);
+
+                InstantCodeClient.Instance.SendPacket(new P05StreamData(sendBuffer));
+
+                progressChanged((int)(transmitted / (double)zipFile.Length * 100d));
+            }
+            InstantCodeClient.Instance.SendPacket(new P06CloseStream());
+            zipFile.Delete();
+        }
 
         private void DisconnectButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {

@@ -1,5 +1,8 @@
-﻿namespace InstantCode.Client.GUI.Model
+﻿using System;
+
+namespace InstantCode.Client.GUI.Model
 {
+    [Serializable]
     public class ServerEntry
     {
         public string Name { get; }

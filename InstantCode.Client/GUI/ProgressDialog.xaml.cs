@@ -15,7 +15,8 @@ namespace InstantCode.Client.GUI
 
         public int Value { set => ProgressBar.Value = value; }
 
-       
+        public bool IsIntermediate { set => ProgressBar.IsIndeterminate = value; }
+
         public ProgressDialog(string statusMessage, Action cancelHandler, bool intermediate = false)
         {
             InitializeComponent();

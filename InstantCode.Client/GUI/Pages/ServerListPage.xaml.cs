@@ -14,11 +14,16 @@ namespace InstantCode.Client.GUI.Pages
     public partial class ServerListPage : UserControl
     {
         private readonly IPageSwitcher pageSwitcher;
+        private readonly ServerList serverList;
 
         public ServerListPage(IPageSwitcher pageSwitcher)
         {
             InitializeComponent();
             this.pageSwitcher = pageSwitcher;
+            serverList = new ServerList();
+            serverList.Load();
+            foreach (var entry in serverList.Entries)
+                ServerListView.Items.Add(entry); 
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -28,7 +33,10 @@ namespace InstantCode.Client.GUI.Pages
 
             if (dialog.ServerName.Trim() == "" || dialog.ServerIp.Trim() == "" || dialog.ServerUsername.Trim() == "" || dialog.ServerPassword.Trim() == "")
                 return;
-            ServerListView.Items.Add(new ServerEntry(dialog.ServerName, dialog.ServerIp, dialog.ServerUsername, dialog.ServerPassword));
+            var entry = new ServerEntry(dialog.ServerName, dialog.ServerIp, dialog.ServerUsername,
+                dialog.ServerPassword);
+            ServerListView.Items.Add(entry);
+            serverList.AddServer(entry);
         }
 
         private async void ServerListView_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)

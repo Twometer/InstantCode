@@ -45,8 +45,9 @@ namespace InstantCode.Server.IO
         {
             var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
             ClientManager.ForSession(session, handler => handler.SendPacket(p02NewSession));
+            clientHandler.ClientData.CurrentSessionId = session.Id;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok, session.Id));
-            Log.I(Tag, $"{clientHandler.ClientData.Username} created a new session {session.Name} with Id {session.Id:X} and participants [{string.Join(',', session.Participants)}]");
+            Log.I(Tag, $"{clientHandler.ClientData.Username} created a new session {session.Name} with id {session.Id:X} and participants [{string.Join(',', session.Participants)}]");
         }
 
         public void HandleP03CloseSession(P03CloseSession p03CloseSession)
@@ -65,6 +66,7 @@ namespace InstantCode.Server.IO
         {
             var fileStream = File.Open(clientHandler.ClientData.CurrentSession.DataPath, FileMode.Create, FileAccess.Write);
             clientHandler.ClientData.CurrentSession.DataTransmission = new DataTransmission(fileStream, p04OpenStream.DataLength);
+            clientHandler.SendPacket(new P01State(ReasonCode.Ok));
         }
 
         public void HandleP05StreamData(P05StreamData p05StreamData)
