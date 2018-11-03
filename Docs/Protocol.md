@@ -92,3 +92,9 @@ Forces everyone in a session to save the project.
 ```
 <Int SessionId>
 ```
+
+#### 0x0A UserList (S->C)
+Tells the client who is logged in at the moment.
+```
+<String[] Users>
+```

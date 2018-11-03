@@ -8,7 +8,33 @@
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <Label Name="Header" FontWeight="Bold">Test</Label>
-    </Grid>
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top" Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}" IsLocked="True">
+            <ToolBar Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">
+                <Button Name="OpenSessionButton" Click="OpenSessionButton_Click">Open Session</Button>
+                <Button Name="DisconnectButton" Click="DisconnectButton_Click" >Disconnect</Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label Name="Header" FontWeight="Bold" Grid.Row="0">Test</Label>
+            <Separator Grid.Row="1"></Separator>
+            <Label FontWeight="Bold" Grid.Row="2">Online users</Label>
+            <ListBox Name="OnlineUsersBox" Grid.Row="3" BorderBrush="Transparent" SelectionMode="Multiple">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding .}" IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </DockPanel>
 </UserControl>
+
+
+

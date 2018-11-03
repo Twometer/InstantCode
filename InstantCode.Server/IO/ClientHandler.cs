@@ -21,6 +21,14 @@ namespace InstantCode.Server.IO
         private static readonly IPacket[] RegisteredPackets =
         {
             new P00Login(),
+            new P02NewSession(), 
+            new P03CloseSession(), 
+            new P04OpenStream(), 
+            new P05StreamData(), 
+            new P06CloseStream(), 
+            new P07CodeChange(), 
+            new P08CursorPosition(), 
+            new P09Save()
         };
 
         public ClientData ClientData { get; }

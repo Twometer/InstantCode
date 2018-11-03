@@ -54,5 +54,10 @@ namespace InstantCode.Client.Network
         {
             
         }
+
+        public void HandleP0AUserList(P0AUserList p0AUserList)
+        {
+            
+        }
     }
 }

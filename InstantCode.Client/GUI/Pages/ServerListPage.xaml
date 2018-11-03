@@ -9,8 +9,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel>
-        <ToolBarTray DockPanel.Dock="Top" Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBorderKey}}" IsLocked="True">
-            <ToolBar Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBorderKey}}">
+        <ToolBarTray DockPanel.Dock="Top" Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}" IsLocked="True">
+            <ToolBar Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">
                 <Button Click="AddButton_Click" VerticalAlignment="Bottom">Add</Button>
                 <Button VerticalAlignment="Bottom">Remove</Button>
             </ToolBar>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using InstantCode.Protocol.Handler;
 using InstantCode.Protocol.IO;
 using InstantCode.Protocol.Packets;
@@ -31,6 +32,7 @@ namespace InstantCode.Server.IO
 
             clientHandler.ClientData.Username = p00Login.Username;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
+            clientHandler.SendPacket(new P0AUserList(ClientManager.ConnectedClients.Select(c => c.ClientData.Username).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList()));
             Log.I(Tag, $"{clientHandler.Ip} logged in with username '{p00Login.Username}'");
         }
 
@@ -44,7 +46,7 @@ namespace InstantCode.Server.IO
             var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
             ClientManager.ForSession(session, handler => handler.SendPacket(p02NewSession));
             clientHandler.SendPacket(new P01State(ReasonCode.Ok, session.Id));
-            Log.I(Tag, $"{clientHandler.ClientData.Username} created a new session with Id {session.Id:X} and participants [{string.Join(',', session.Participants)}]");
+            Log.I(Tag, $"{clientHandler.ClientData.Username} created a new session {session.Name} with Id {session.Id:X} and participants [{string.Join(',', session.Participants)}]");
         }
 
         public void HandleP03CloseSession(P03CloseSession p03CloseSession)
@@ -90,5 +92,9 @@ namespace InstantCode.Server.IO
             ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p09Save));
         }
 
+        public void HandleP0AUserList(P0AUserList p0AUserList)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

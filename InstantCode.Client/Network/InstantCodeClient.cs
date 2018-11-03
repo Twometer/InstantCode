@@ -20,9 +20,12 @@ namespace InstantCode.Client.Network
 
         private PacketAwaitItem awaitItem = new PacketAwaitItem();
 
+        public int CurrentSessionId { get; set; }
+
         private static readonly IPacket[] RegisteredPackets =
         {
-            new P01State()
+            new P01State(),
+            new P0AUserList()
         };
 
         public async Task<T> WaitForReplyAsync<T>() where T : IPacket

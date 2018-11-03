@@ -23,5 +23,7 @@ namespace InstantCode.Protocol.Handler
         void HandleP08CursorPosition(P08CursorPosition p08CursorPosition);
 
         void HandleP09Save(P09Save p09Save);
+
+        void HandleP0AUserList(P0AUserList p0AUserList);
     }
 }

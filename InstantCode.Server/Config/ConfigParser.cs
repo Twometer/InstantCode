@@ -21,7 +21,7 @@ namespace InstantCode.Server.Config
         {
             if (json == "")
             {
-                Log.I(Tag, "Config file not found, creating deafult config...");
+                Log.I(Tag, "Config file not found, creating default config...");
                 json = JsonConvert.SerializeObject(new ServerConfig());
                 File.WriteAllText(path, json);
             }

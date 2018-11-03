@@ -89,11 +89,10 @@ namespace InstantCode.Client.GUI.ToolWindow
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
             ToolWindowPane window = this.package.FindToolWindow(typeof(InstantCodeToolWindow), 0, true);
-            if ((null == window) || (null == window.Frame))
+            if (window?.Frame == null)
             {
                 throw new NotSupportedException("Cannot create tool window");
             }
-
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }

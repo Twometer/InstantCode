@@ -57,6 +57,9 @@
     <Compile Include="GUI\AddServerDialog.xaml.cs">
       <DependentUpon>AddServerDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUI\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Model\ServerEntry.cs" />
     <Compile Include="GUI\ProgressDialog.xaml.cs">
       <DependentUpon>ProgressDialog.xaml</DependentUpon>
@@ -199,6 +202,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="GUI\AddServerDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\ErrorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
