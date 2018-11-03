@@ -26,14 +26,14 @@ namespace InstantCode.Server.IO
             foreach (var client in ClientManager.ConnectedClients)
             {
                 if (!string.Equals(client.ClientData.Username, p00Login.Username, StringComparison.OrdinalIgnoreCase)) continue;
-                Log.I(Tag, "Rejected login attempt for " + client.Ip + ": Username already taken");
+                Log.I(Tag, $"Rejected login attempt for {client.Ip}: Username already taken");
                 clientHandler.SendPacket(new P01State(ReasonCode.UsernameTaken));
                 return;
             }
 
             clientHandler.ClientData.Username = p00Login.Username;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
-            Log.I(Tag, clientHandler.Ip + " logged in with username '" + p00Login.Username + "'");
+            Log.I(Tag, $"{clientHandler.Ip} logged in with username '{p00Login.Username}'");
         }
 
         public void HandleP01State(P01State p01State)
@@ -46,6 +46,7 @@ namespace InstantCode.Server.IO
             var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
             ClientManager.ForSession(session, handler => handler.SendPacket(p02NewSession));
             clientHandler.SendPacket(new P01State(ReasonCode.Ok, session.Id));
+            Log.I(Tag, $"{clientHandler.ClientData.Username} created a new session with Id {session.Id:X} and participants [{string.Join(',', session.Participants)}]");
         }
 
         public void HandleP03CloseSession(P03CloseSession p03CloseSession)
@@ -57,6 +58,7 @@ namespace InstantCode.Server.IO
             }
             ClientManager.ForSession(SessionManager.Find(p03CloseSession.SessionId), handler => handler.SendPacket(p03CloseSession));
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
+            Log.I(Tag, $"{clientHandler.ClientData.Username} closed session {p03CloseSession.SessionId:X}");
         }
 
         public void HandleP04OpenStream(P04OpenStream p04OpenStream)

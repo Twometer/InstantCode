@@ -19,8 +19,11 @@ namespace InstantCode.Server
 
         private static void Main(string[] args)
         {
+            Log.I(Tag, "Loading configuration");
             var config = ConfigParser.FromFile(ConfigPath).EnsureCreated().Parse();
             CredentialStore.Store(config.Password);
+
+            SetupFileSystem();
 
             var listener = new TcpListener(IPAddress.Any, config.Port);
             listener.Start();
@@ -36,6 +39,7 @@ namespace InstantCode.Server
 
         private static void SetupFileSystem()
         {
+            Log.I(Tag, "Setting up file system");
             if (!Directory.Exists(UserDirectory))
                 Directory.CreateDirectory(UserDirectory);
         }
