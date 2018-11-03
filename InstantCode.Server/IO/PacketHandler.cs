@@ -32,7 +32,7 @@ namespace InstantCode.Server.IO
 
             clientHandler.ClientData.Username = p00Login.Username;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
-            clientHandler.SendPacket(new P0AUserList(ClientManager.ConnectedClients.Select(c => c.ClientData.Username).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList()));
+            clientHandler.SendPacket(new P0AUserList(ClientManager.ConnectedClients.Select(c => c.ClientData.Username).Where(c => !string.IsNullOrWhiteSpace(c) && c != p00Login.Username).Distinct().ToList()));
             Log.I(Tag, $"{clientHandler.Ip} logged in with username '{p00Login.Username}'");
         }
 

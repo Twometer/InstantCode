@@ -20,6 +20,7 @@ namespace InstantCode.Client.Network
 
         private PacketAwaitItem awaitItem = new PacketAwaitItem();
 
+        public string CurrentSessionName { get; set; }
         public int CurrentSessionId { get; set; }
 
         private static readonly IPacket[] RegisteredPackets =
