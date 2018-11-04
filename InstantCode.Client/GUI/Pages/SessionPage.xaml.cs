@@ -25,8 +25,11 @@ namespace InstantCode.Client.GUI.Pages
         {
             InitializeComponent();
             Header.Content = $"Connected to session '{InstantCodeClient.Instance.CurrentSessionName}'";
+
+            SessionParticipantsBox.Items.Add(InstantCodeClient.Instance.CurrentUsername + " (Me)");
             foreach (var part in InstantCodeClient.Instance.CurrentSessionParticipants)
-                SessionParticipantsBox.Items.Add(part);
+                if (part != InstantCodeClient.Instance.CurrentUsername)
+                    SessionParticipantsBox.Items.Add(part);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace InstantCode.Protocol.IO
 {
@@ -32,7 +33,7 @@ namespace InstantCode.Protocol.IO
             while (totalRead < count)
             {
                 var read = baseStream.Read(buffer, offset + totalRead, count - totalRead);
-                if (read < 0) 
+                if (read < 0)
                     return totalRead;
                 totalRead += read;
             }
@@ -42,6 +43,11 @@ namespace InstantCode.Protocol.IO
         public override void Write(byte[] buffer, int offset, int count)
         {
             baseStream.Write(buffer, offset, count);
+        }
+
+        public override void Close()
+        {
+            baseStream.Close();
         }
 
         public override bool CanRead => baseStream.CanRead;

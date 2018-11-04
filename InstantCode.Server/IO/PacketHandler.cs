@@ -42,12 +42,11 @@ namespace InstantCode.Server.IO
             throw new NotImplementedException();
         }
 
-        // TODO: Participants list does not work correctly, the owner is left out. The filtering should not be done here to ensure correct packet delivery later on.
         public void HandleP02NewSession(P02NewSession p02NewSession)
         {
             var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
             ClientManager.AssignSession(session);
-            ClientManager.ForSession(session, handler => handler.SendPacket(p02NewSession));
+            ClientManager.ForSession(clientHandler, session, handler => handler.SendPacket(p02NewSession));
             clientHandler.ClientData.CurrentSessionId = session.Id;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok, session.Id));
             Log.I(Tag, $"{clientHandler.ClientData.Username} created a new session {session.Name} with id {session.Id:X} and participants [{string.Join(',', session.Participants)}]");
@@ -60,7 +59,7 @@ namespace InstantCode.Server.IO
                 clientHandler.SendPacket(new P01State(ReasonCode.NoPermission));
                 return;
             }
-            ClientManager.ForSession(SessionManager.Find(p03CloseSession.SessionId), handler => handler.SendPacket(p03CloseSession));
+            ClientManager.ForSession(clientHandler, SessionManager.Find(p03CloseSession.SessionId), handler => handler.SendPacket(p03CloseSession));
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
             Log.I(Tag, $"{clientHandler.ClientData.Username} closed session {p03CloseSession.SessionId:X}");
         }
@@ -84,7 +83,7 @@ namespace InstantCode.Server.IO
             using (var fileStream = File.OpenRead(clientHandler.ClientData.CurrentSession.DataPath))
             {
                 var streamInit = new P04OpenStream(clientHandler.ClientData.CurrentSession.DataTransmission.Length);
-                ClientManager.ForSession(clientHandler.ClientData.CurrentSession, client => client.SendPacket(streamInit));
+                ClientManager.ForSession(clientHandler, clientHandler.ClientData.CurrentSession, client => client.SendPacket(streamInit));
 
                 var buffer = new byte[8192];
                 while (true)
@@ -97,26 +96,26 @@ namespace InstantCode.Server.IO
                     Array.Copy(buffer, 0, sendBuffer, 0, sendBuffer.Length);
 
                     var dataPacket = new P05StreamData(sendBuffer);
-                    ClientManager.ForSession(clientHandler.ClientData.CurrentSession, client => client.SendPacket(dataPacket));
+                    ClientManager.ForSession(clientHandler, clientHandler.ClientData.CurrentSession, client => client.SendPacket(dataPacket));
                 }
-                ClientManager.ForSession(clientHandler.ClientData.CurrentSession, client => client.SendPacket(new P06CloseStream()));
+                ClientManager.ForSession(clientHandler, clientHandler.ClientData.CurrentSession, client => client.SendPacket(new P06CloseStream()));
             }
             Log.I(Tag, $"Successfully transmitted {clientHandler.ClientData.Username}'s project to their session.");
         }
 
         public void HandleP07CodeChange(P07CodeChange p07CodeChange)
         {
-            ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p07CodeChange));
+            ClientManager.ForSession(clientHandler, clientHandler.ClientData.CurrentSession, handler => handler.SendPacket(p07CodeChange));
         }
 
         public void HandleP08CursorPosition(P08CursorPosition p08CursorPosition)
         {
-            ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p08CursorPosition));
+            ClientManager.ForSession(clientHandler, clientHandler.ClientData.CurrentSession, handler => handler.SendPacket(p08CursorPosition));
         }
 
         public void HandleP09Save(P09Save p09Save)
         {
-            ClientManager.ForSession(SessionManager.Find(clientHandler.ClientData.CurrentSessionId), handler => handler.SendPacket(p09Save));
+            ClientManager.ForSession(clientHandler, clientHandler.ClientData.CurrentSession, handler => handler.SendPacket(p09Save));
         }
 
         public void HandleP0AUserList(P0AUserList p0AUserList)

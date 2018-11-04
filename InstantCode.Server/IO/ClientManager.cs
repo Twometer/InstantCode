@@ -35,10 +35,10 @@ namespace InstantCode.Server.IO
                 }
         }
 
-        public static void ForSession(Session session, Action<ClientHandler> action)
+        public static void ForSession(ClientHandler sender, Session session, Action<ClientHandler> action)
         {
             foreach (var client in ConnectedClients)
-                if (session.Participants.Any(name => client.ClientData.Username == name))
+                if (sender.ClientData.Username != client.ClientData.Username && session.Participants.Any(name => client.ClientData.Username == name))
                     action(client);
         }
     }

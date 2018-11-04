@@ -54,9 +54,10 @@ namespace InstantCode.Client.GUI.Pages
                 return;
             }
 
-            var participants = OnlineUsersBox.SelectedItems.Cast<string>().ToArray();
+            var participants = OnlineUsersBox.SelectedItems.Cast<string>().Concat(new[] {InstantCodeClient.Instance.CurrentUsername}).ToArray();
 
-            InstantCodeClient.Instance.SendPacket(new P02NewSession(solution.Projects.Item(1).Name, participants));
+            var sessionName = solution.Projects.Item(1).Name;
+            InstantCodeClient.Instance.SendPacket(new P02NewSession(sessionName, participants));
             var statePacket = await InstantCodeClient.Instance.WaitForReplyAsync<P01State>();
             if (statePacket.ReasonCode != ReasonCode.Ok)
             {
@@ -65,6 +66,7 @@ namespace InstantCode.Client.GUI.Pages
                 return;
             }
 
+            InstantCodeClient.Instance.CurrentSessionName = sessionName;
             InstantCodeClient.Instance.CurrentSessionParticipants = participants;
             InstantCodeClient.Instance.CurrentSessionId = statePacket.Payload;
 
@@ -131,7 +133,7 @@ namespace InstantCode.Client.GUI.Pages
         private void DisconnectButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             InstantCodeClient.Instance.Disconnect();
-            pageSwitcher.SwitchPage(parent);
+            //pageSwitcher.SwitchPage(parent);
         }
     }
 }

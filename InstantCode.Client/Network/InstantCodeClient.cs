@@ -24,9 +24,14 @@ namespace InstantCode.Client.Network
 
         private PacketAwaitItem awaitItem = new PacketAwaitItem();
 
+        public string CurrentUsername { get; set; }
         public string[] CurrentSessionParticipants { get; set; }
         public string CurrentSessionName { get; set; }
         public int CurrentSessionId { get; set; }
+
+        public Action DisconnectHandler { get; set; }
+
+        private bool forcedClose = false;
 
         private static readonly IPacket[] RegisteredPackets =
         {
@@ -73,13 +78,18 @@ namespace InstantCode.Client.Network
             {
                 try
                 {
-                    var packetBuf = await PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash);
-                    HandlePacket(packetBuf);
+                    HandlePacket(await PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash));
                 }
-                catch
+                catch(Exception e)
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    new ErrorDialog("Connection to the server has been lost").ShowModal();
+                    DisconnectHandler?.Invoke();
+                    if (forcedClose)
+                    {
+                        forcedClose = false;
+                        return;
+                    }
+                    new ErrorDialog("Connection to the server has been lost: " + e.Message).ShowModal();
                     break;
                 }
             }
@@ -107,10 +117,11 @@ namespace InstantCode.Client.Network
         public void Disconnect()
         {
             tcpClient.Close();
+            tcpClient.Dispose();
             CurrentSessionId = 0;
             CurrentSessionName = null;
             CurrentSessionParticipants = null;
-
+            forcedClose = true;
         }
 
     }

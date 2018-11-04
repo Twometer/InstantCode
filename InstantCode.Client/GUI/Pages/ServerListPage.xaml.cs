@@ -23,7 +23,8 @@ namespace InstantCode.Client.GUI.Pages
             serverList = new ServerList();
             serverList.Load();
             foreach (var entry in serverList.Entries)
-                ServerListView.Items.Add(entry); 
+                ServerListView.Items.Add(entry);
+            InstantCodeClient.Instance.DisconnectHandler = () => pageSwitcher.SwitchPage(this);
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -51,6 +52,7 @@ namespace InstantCode.Client.GUI.Pages
                 await icClient.ConnectAsync(pageSwitcher, entry.Ip, 0xC0DE, entry.Password);
                 var statePacket = await icClient.SendPacket(new P00Login(entry.Username))
                     .WaitForReplyAsync<P01State>();
+                InstantCodeClient.Instance.CurrentUsername = entry.Username;
                 if (statePacket.ReasonCode != ReasonCode.Ok)
                 {
                     progressDialog.Close();
