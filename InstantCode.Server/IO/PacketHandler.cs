@@ -44,6 +44,7 @@ namespace InstantCode.Server.IO
         public void HandleP02NewSession(P02NewSession p02NewSession)
         {
             var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
+            ClientManager.AssignSession(session);
             ClientManager.ForSession(session, handler => handler.SendPacket(p02NewSession));
             clientHandler.ClientData.CurrentSessionId = session.Id;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok, session.Id));
@@ -77,6 +78,28 @@ namespace InstantCode.Server.IO
         public void HandleP06CloseStream(P06CloseStream p06CloseStream)
         {
             clientHandler.ClientData.CurrentSession.DataTransmission?.Close();
+            Log.I(Tag, $"{clientHandler.ClientData.Username} finished uploading project data. Transmitting to rest of session...");
+            using (var fileStream = File.OpenRead(clientHandler.ClientData.CurrentSession.DataPath))
+            {
+                var streamInit = new P04OpenStream(clientHandler.ClientData.CurrentSession.DataTransmission.Length);
+                ClientManager.ForSession(clientHandler.ClientData.CurrentSession, client => client.SendPacket(streamInit));
+
+                var buffer = new byte[8192];
+                while (true)
+                {
+                    var read = fileStream.Read(buffer, 0, buffer.Length);
+                    if (read <= 0)
+                        break;
+
+                    var sendBuffer = new byte[read];
+                    Array.Copy(buffer, 0, sendBuffer, 0, sendBuffer.Length);
+
+                    var dataPacket = new P05StreamData(sendBuffer);
+                    ClientManager.ForSession(clientHandler.ClientData.CurrentSession, client => client.SendPacket(dataPacket));
+                }
+                ClientManager.ForSession(clientHandler.ClientData.CurrentSession, client => client.SendPacket(new P06CloseStream()));
+            }
+            Log.I(Tag, $"Successfully transmitted {clientHandler.ClientData.Username}'s project to their session.");
         }
 
         public void HandleP07CodeChange(P07CodeChange p07CodeChange)

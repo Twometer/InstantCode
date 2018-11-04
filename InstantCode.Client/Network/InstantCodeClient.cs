@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using InstantCode.Client.GUI;
 using InstantCode.Protocol;
 using InstantCode.Protocol.Crypto;
 using InstantCode.Protocol.IO;
 using InstantCode.Protocol.Packets;
 using InstantCode.Client.Utils;
+using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace InstantCode.Client.Network
 {
@@ -26,6 +29,14 @@ namespace InstantCode.Client.Network
         private static readonly IPacket[] RegisteredPackets =
         {
             new P01State(),
+            new P02NewSession(),
+            new P03CloseSession(),
+            new P04OpenStream(),
+            new P05StreamData(),
+            new P06CloseStream(),
+            new P07CodeChange(),
+            new P08CursorPosition(),
+            new P09Save(),
             new P0AUserList()
         };
 
@@ -58,8 +69,17 @@ namespace InstantCode.Client.Network
         {
             while (tcpClient.Connected)
             {
-                var packetBuf = await PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash);
-                HandlePacket(packetBuf);
+                try
+                {
+                    var packetBuf = await PacketSerializer.Deserialize(dataStream, CredentialStore.KeyHash);
+                    HandlePacket(packetBuf);
+                }
+                catch
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    new ErrorDialog("Connection to the server has been lost").ShowModal();
+                    break;
+                }
             }
         }
 

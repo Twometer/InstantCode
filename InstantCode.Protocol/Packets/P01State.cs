@@ -48,6 +48,7 @@ namespace InstantCode.Protocol.Packets
     {
         Ok,
         UsernameTaken,
-        NoPermission
+        NoPermission,
+        SessionJoined
     }
 }

@@ -92,6 +92,8 @@ namespace InstantCode.Client.GUI.Pages
             {
                 foreach (var file in Directory.GetFiles(solutionFolderPath, "*", SearchOption.AllDirectories))
                 {
+                    if (file.EndsWith("db.lock"))
+                        continue;
                     var entryName = file.Substring(solutionFolderPath.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                     var entry = archive.CreateEntry(entryName);
                     entry.LastWriteTime = File.GetLastWriteTime(file);
@@ -104,27 +106,29 @@ namespace InstantCode.Client.GUI.Pages
 
         private async Task TransmitAsync(FileInfo zipFile, Action<int> progressChanged)
         {
-            var file = zipFile.OpenRead();
-            InstantCodeClient.Instance.SendPacket(new P04OpenStream((int)zipFile.Length));
-            await InstantCodeClient.Instance.WaitForReplyAsync<P01State>();
-
-            var transmitted = 0;
-            var buffer = new byte[8192];
-            while (true)
+            using (var file = zipFile.OpenRead())
             {
-                var read = await file.ReadAsync(buffer, 0, buffer.Length);
-                if (read < 0)
-                    break;
-                transmitted += read;
+                InstantCodeClient.Instance.SendPacket(new P04OpenStream((int)zipFile.Length));
+                await InstantCodeClient.Instance.WaitForReplyAsync<P01State>();
 
-                var sendBuffer = new byte[read];
-                Array.Copy(buffer, 0, sendBuffer, 0, sendBuffer.Length);
+                var transmitted = 0;
+                var buffer = new byte[8192];
+                while (true)
+                {
+                    var read = await file.ReadAsync(buffer, 0, buffer.Length);
+                    if (read <= 0)
+                        break;
+                    transmitted += read;
 
-                InstantCodeClient.Instance.SendPacket(new P05StreamData(sendBuffer));
+                    var sendBuffer = new byte[read];
+                    Array.Copy(buffer, 0, sendBuffer, 0, sendBuffer.Length);
 
-                progressChanged((int)(transmitted / (double)zipFile.Length * 100d));
+                    InstantCodeClient.Instance.SendPacket(new P05StreamData(sendBuffer));
+
+                    progressChanged((int)(transmitted / (double)zipFile.Length * 100d));
+                }
+                InstantCodeClient.Instance.SendPacket(new P06CloseStream());
             }
-            InstantCodeClient.Instance.SendPacket(new P06CloseStream());
             zipFile.Delete();
         }
 

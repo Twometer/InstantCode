@@ -41,6 +41,7 @@ Used for state information, such as "Login OK" or "Username already taken". The 
 - 0x00 Ok
 - 0x01 UsernameTaken
 - 0x02 NoPermission
+- 0x03 SessionJoined
 
 #### 0x02 NewSession (C->S)
 Creates a coding session, responds with a `0x01 State` packet. If creation was successful,

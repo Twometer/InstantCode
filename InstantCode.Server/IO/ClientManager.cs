@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using InstantCode.Protocol.Packets;
 using InstantCode.Server.Model;
 
 namespace InstantCode.Server.IO
@@ -24,9 +25,19 @@ namespace InstantCode.Server.IO
                 ConnectedClients.Remove(handler);
         }
 
+        public static void AssignSession(Session session)
+        {
+            foreach (var client in ConnectedClients)
+                if (session.Participants.Any(name => client.ClientData.Username == name))
+                {
+                    client.ClientData.CurrentSessionId = session.Id;
+                    client.SendPacket(new P01State(ReasonCode.SessionJoined, session.Id));
+                }
+        }
+
         public static void ForSession(Session session, Action<ClientHandler> action)
         {
-            foreach(var client in ConnectedClients)
+            foreach (var client in ConnectedClients)
                 if (session.Participants.Any(name => client.ClientData.Username == name))
                     action(client);
         }
