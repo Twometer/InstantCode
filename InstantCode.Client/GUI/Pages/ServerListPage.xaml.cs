@@ -48,7 +48,7 @@ namespace InstantCode.Client.GUI.Pages
             try
             {
                 var icClient = InstantCodeClient.Instance;
-                await icClient.ConnectAsync(entry.Ip, 0xC0DE, entry.Password);
+                await icClient.ConnectAsync(pageSwitcher, entry.Ip, 0xC0DE, entry.Password);
                 var statePacket = await icClient.SendPacket(new P00Login(entry.Username))
                     .WaitForReplyAsync<P01State>();
                 if (statePacket.ReasonCode != ReasonCode.Ok)

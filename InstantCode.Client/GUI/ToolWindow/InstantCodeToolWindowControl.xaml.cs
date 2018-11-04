@@ -17,5 +17,10 @@ namespace InstantCode.Client.GUI.ToolWindow
         {
             ContentPresenter.Content = newPage;
         }
+
+        public UserControl GetCurrentPage()
+        {
+            return ContentPresenter.Content as UserControl;
+        }
     }
 }

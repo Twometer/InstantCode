@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using InstantCode.Client.GUI;
+using InstantCode.Client.GUI.Pages;
 using InstantCode.Protocol;
 using InstantCode.Protocol.Crypto;
 using InstantCode.Protocol.IO;
@@ -23,6 +24,7 @@ namespace InstantCode.Client.Network
 
         private PacketAwaitItem awaitItem = new PacketAwaitItem();
 
+        public string[] CurrentSessionParticipants { get; set; }
         public string CurrentSessionName { get; set; }
         public int CurrentSessionId { get; set; }
 
@@ -48,12 +50,12 @@ namespace InstantCode.Client.Network
             return (T)awaitItem.Packet;
         }
 
-        public async Task ConnectAsync(string server, int port, string password)
+        public async Task ConnectAsync(IPageSwitcher pageSwitcher, string server, int port, string password)
         {
             tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(server, port);
             dataStream = new FixedDataStream(tcpClient.GetStream());
-            packetHandler = new PacketHandler();
+            packetHandler = new PacketHandler(pageSwitcher);
             CredentialStore.Store(password);
             StartReadingAsync();
         }
@@ -105,6 +107,10 @@ namespace InstantCode.Client.Network
         public void Disconnect()
         {
             tcpClient.Close();
+            CurrentSessionId = 0;
+            CurrentSessionName = null;
+            CurrentSessionParticipants = null;
+
         }
 
     }

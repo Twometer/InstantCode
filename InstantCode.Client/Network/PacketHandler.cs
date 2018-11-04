@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Linq;
 using EnvDTE;
 using InstantCode.Client.GUI;
+using InstantCode.Client.GUI.Pages;
 using InstantCode.Protocol.Handler;
 using InstantCode.Protocol.Packets;
 using Microsoft.VisualStudio.Shell;
@@ -15,11 +16,18 @@ namespace InstantCode.Client.Network
         private static readonly string FolderPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "InstantCode");
 
+        private IPageSwitcher pageSwitcher;
+
         private ProgressDialog progressDialog;
         private Stream currentStream;
 
         private int streamRead;
         private int streamLength;
+
+        public PacketHandler(IPageSwitcher pageSwitcher)
+        {
+            this.pageSwitcher = pageSwitcher;
+        }
 
         public void HandleP00Login(P00Login p00Login)
         {
@@ -35,6 +43,7 @@ namespace InstantCode.Client.Network
         public async void HandleP02NewSession(P02NewSession p02NewSession)
         {
             InstantCodeClient.Instance.CurrentSessionName = p02NewSession.ProjectName;
+            InstantCodeClient.Instance.CurrentSessionParticipants = p02NewSession.Participants;
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             progressDialog = new ProgressDialog($"Joining session '{p02NewSession.ProjectName}'...", () => { }, true);
             progressDialog.Show();
@@ -81,6 +90,8 @@ namespace InstantCode.Client.Network
 
             var dte = (DTE)Package.GetGlobalService(typeof(DTE));
             dte.Solution.Open(solutionFile);
+
+            pageSwitcher.SwitchPage(new SessionPage());
         }
 
         public void HandleP07CodeChange(P07CodeChange p07CodeChange)
@@ -98,9 +109,15 @@ namespace InstantCode.Client.Network
             
         }
 
-        public void HandleP0AUserList(P0AUserList p0AUserList)
+        public async void HandleP0AUserList(P0AUserList p0AUserList)
         {
-            
+            if (pageSwitcher.GetCurrentPage() is ConnectedPage page)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                page.OnlineUsersBox.Items.Clear();
+                foreach (var itm in p0AUserList.UserList)
+                    page.OnlineUsersBox.Items.Add(itm);
+            }
         }
     }
 }

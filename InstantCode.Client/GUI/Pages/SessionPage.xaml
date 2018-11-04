@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="InstantCode.Client.GUI.Pages.SessionPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:InstantCode.Client.GUI.Pages"
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top" Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}" IsLocked="True">
+            <ToolBar Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">
+                <Button Name="OpenSessionButton">Leave session</Button>
+                <Button Name="DisconnectButton">Disconnect</Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label Name="Header" FontWeight="Bold" Grid.Row="0">Currently in session '{name}'</Label>
+            <Separator Grid.Row="1"></Separator>
+            <Label FontWeight="Bold" Grid.Row="2">Participants</Label>
+            <ListBox Name="SessionParticipantsBox" Grid.Row="3" BorderBrush="Transparent" SelectionMode="Multiple"/>
+        </Grid>
+    </DockPanel>
+</UserControl>

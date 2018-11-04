@@ -29,14 +29,6 @@ namespace InstantCode.Client.GUI.Pages
             this.currentServer = currentServer;
             InitializeComponent();
             Header.Content = $"Connected to {currentServer.Name} ({currentServer.Ip})";
-            LoadUsers();
-        }
-
-        private async void LoadUsers()
-        {
-            var userList = await InstantCodeClient.Instance.WaitForReplyAsync<P0AUserList>();
-            foreach (var user in userList.UserList)
-                OnlineUsersBox.Items.Add(user);
         }
 
         private async void OpenSessionButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -72,6 +64,8 @@ namespace InstantCode.Client.GUI.Pages
                 progressDialog.Close();
                 return;
             }
+
+            InstantCodeClient.Instance.CurrentSessionParticipants = participants;
             InstantCodeClient.Instance.CurrentSessionId = statePacket.Payload;
 
             progressDialog.StatusMessage = "Compressing project...";
@@ -83,6 +77,8 @@ namespace InstantCode.Client.GUI.Pages
             progressDialog.IsIntermediate = false;
             await TransmitAsync(zipFile, p => progressDialog.Value = p);
             progressDialog.Close();
+
+            pageSwitcher.SwitchPage(new SessionPage());
         }
 
         private static void ZipSolution(string solutionFolderPath, string zipFilePath)

@@ -32,7 +32,8 @@ namespace InstantCode.Server.IO
 
             clientHandler.ClientData.Username = p00Login.Username;
             clientHandler.SendPacket(new P01State(ReasonCode.Ok));
-            clientHandler.SendPacket(new P0AUserList(ClientManager.ConnectedClients.Select(c => c.ClientData.Username).Where(c => !string.IsNullOrWhiteSpace(c) && c != p00Login.Username).Distinct().ToList()));
+            foreach (var client in ClientManager.ConnectedClients)
+                client.SendPacket(new P0AUserList(ClientManager.ConnectedClients.Select(c => c.ClientData.Username).Where(c => !string.IsNullOrWhiteSpace(c) && c != client.ClientData.Username).Distinct().ToList()));
             Log.I(Tag, $"{clientHandler.Ip} logged in with username '{p00Login.Username}'");
         }
 
@@ -41,6 +42,7 @@ namespace InstantCode.Server.IO
             throw new NotImplementedException();
         }
 
+        // TODO: Participants list does not work correctly, the owner is left out. The filtering should not be done here to ensure correct packet delivery later on.
         public void HandleP02NewSession(P02NewSession p02NewSession)
         {
             var session = SessionManager.CreateNew(p02NewSession.ProjectName, p02NewSession.Participants);
@@ -88,7 +90,7 @@ namespace InstantCode.Server.IO
                 while (true)
                 {
                     var read = fileStream.Read(buffer, 0, buffer.Length);
-                    if (read <= 0)
+                       if (read <= 0)
                         break;
 
                     var sendBuffer = new byte[read];
@@ -121,5 +123,6 @@ namespace InstantCode.Server.IO
         {
             throw new NotImplementedException();
         }
+
     }
 }
