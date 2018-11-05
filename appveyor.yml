@@ -4,10 +4,22 @@ before_build:
 - nuget restore
 - dotnet restore
 after_build:
-- 7z a server.zip %APPVEYOR_BUILD_FOLDER%\InstantCode.Server\bin\Release\netcoreapp2.1\*.dll
-- 7z a server.zip %APPVEYOR_BUILD_FOLDER%\InstantCode.Server\bin\Release\netcoreapp2.1\*.json
+- 7z a Server.zip %APPVEYOR_BUILD_FOLDER%\InstantCode.Server\bin\Release\netcoreapp2.1\*.dll
+- 7z a Server.zip %APPVEYOR_BUILD_FOLDER%\InstantCode.Server\bin\Release\netcoreapp2.1\*.json
 artifacts:
-- path: server.zip
+- path: Server.zip
   name: Server
 - path: InstantCode.Client\bin\$(configuration)\*.vsix
   name: Client
+deploy:
+  release: instantcode-v$(appveyor_build_version)
+  description: 'InstantCode release from AppVeyor'
+  provider: GitHub
+  auth_token:
+    secure: vTQ6JtxWWFi6A3Sh0zELnOjimiESunEwuIKhAsvmu3KSQZy9M8FeeMynEvJhYDT6
+  artifact: Server.zip,InstantCode.Client\bin\$(configuration)\*.vsix
+  draft: false
+  prerelease: false
+  on:
+    branch: master
+    appveyor_repo_tag: true
