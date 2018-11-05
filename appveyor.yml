@@ -3,3 +3,11 @@ image: Visual Studio 2017
 before_build:
 - nuget restore
 - dotnet restore
+after_build:
+- 7z a server.zip %APPVEYOR_BUILD_FOLDER%\InstantCode.Server\bin\$(configuration)\netcoreapp2.1\*.dll
+- 7z a server.zip %APPVEYOR_BUILD_FOLDER%\InstantCode.Server\bin\$(configuration)\netcoreapp2.1\*.json
+artifacts:
+- path: server.zip
+  name: Server
+- path: InstantCode.Client\bin\$(configuration)\*.vsix
+  name: Client
