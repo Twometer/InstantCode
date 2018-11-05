@@ -11,15 +11,15 @@ artifacts:
   name: Server
 - path: InstantCode.Client\bin\$(configuration)\*.vsix
   name: Client
-deploy:
-  release: instantcode-v$(appveyor_build_version)
-  description: 'InstantCode release from AppVeyor'
-  provider: GitHub
-  auth_token:
-    secure: vTQ6JtxWWFi6A3Sh0zELnOjimiESunEwuIKhAsvmu3KSQZy9M8FeeMynEvJhYDT6
-  artifact: Server.zip,InstantCode.Client\bin\$(configuration)\*.vsix
-  draft: false
-  prerelease: false
-  on:
-    branch: master
-    appveyor_repo_tag: true
+#deploy:
+#  release: instantcode-v$(appveyor_build_version)
+#  description: 'InstantCode release from AppVeyor'
+#  provider: GitHub
+#  auth_token:
+#    secure: vTQ6JtxWWFi6A3Sh0zELnOjimiESunEwuIKhAsvmu3KSQZy9M8FeeMynEvJhYDT6
+#  artifact: Server.zip,InstantCode.Client\bin\$(configuration)\*.vsix
+#  draft: false
+#  prerelease: false
+#  on:
+#    branch: master
+#    appveyor_repo_tag: true
