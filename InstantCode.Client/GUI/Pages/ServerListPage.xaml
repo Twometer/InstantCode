@@ -12,7 +12,7 @@
         <ToolBarTray DockPanel.Dock="Top" Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}" IsLocked="True">
             <ToolBar Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">
                 <Button Click="AddButton_Click" VerticalAlignment="Bottom">Add</Button>
-                <Button VerticalAlignment="Bottom">Remove</Button>
+                <Button Click="RemoveButton_Click" VerticalAlignment="Bottom">Remove</Button>
             </ToolBar>
         </ToolBarTray>
         <Grid>

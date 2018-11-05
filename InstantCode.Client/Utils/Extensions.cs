@@ -1,6 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace InstantCode.Client.Utils
 {
@@ -17,6 +21,13 @@ namespace InstantCode.Client.Utils
             var t = tcs.Task;
             t.ContinueWith((antecedent) => rwh.Unregister(null));
             return t;
+        }
+
+        public static string GetRelativePath(this ProjectItem projectItem, Solution owner)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var directoryInfo = new FileInfo(owner.FileName).Directory;
+            return directoryInfo != null ? projectItem.FileNames[0].Substring(directoryInfo.FullName.Length) : null;
         }
     }
 }

@@ -3,8 +3,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using EnvDTE;
+using InstantCode.Client.Editor;
 using InstantCode.Client.GUI;
 using InstantCode.Client.GUI.Pages;
+using InstantCode.Client.Model;
 using InstantCode.Protocol.Handler;
 using InstantCode.Protocol.Packets;
 using Microsoft.VisualStudio.Shell;
@@ -16,11 +18,11 @@ namespace InstantCode.Client.Network
         private static readonly string FolderPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "InstantCode");
 
-        private IPageSwitcher pageSwitcher;
+        private readonly IPageSwitcher pageSwitcher;
 
         private ProgressDialog progressDialog;
-        private Stream currentStream;
 
+        private Stream currentStream;
         private int streamRead;
         private int streamLength;
 
@@ -31,19 +33,19 @@ namespace InstantCode.Client.Network
 
         public void HandleP00Login(P00Login p00Login)
         {
-            
+
         }
 
         public void HandleP01State(P01State p01State)
         {
             if (p01State.ReasonCode == ReasonCode.SessionJoined)
-                InstantCodeClient.Instance.CurrentSessionId = p01State.Payload;
+                InstantCodeClient.Instance.CurrentSession = new Session { Id = p01State.Payload };
         }
 
         public async void HandleP02NewSession(P02NewSession p02NewSession)
         {
-            InstantCodeClient.Instance.CurrentSessionName = p02NewSession.ProjectName;
-            InstantCodeClient.Instance.CurrentSessionParticipants = p02NewSession.Participants;
+            InstantCodeClient.Instance.CurrentSession.Name = p02NewSession.ProjectName;
+            InstantCodeClient.Instance.CurrentSession.Participants = p02NewSession.Participants;
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             progressDialog = new ProgressDialog($"Joining session '{p02NewSession.ProjectName}'...", () => { }, true);
             progressDialog.Show();
@@ -51,14 +53,14 @@ namespace InstantCode.Client.Network
 
         public void HandleP03CloseSession(P03CloseSession p03CloseSession)
         {
-            
+
         }
 
         public async void HandleP04OpenStream(P04OpenStream p04OpenStream)
         {
             streamLength = p04OpenStream.DataLength;
             currentStream = File.OpenWrite(Path.Combine(FolderPath,
-                $"{InstantCodeClient.Instance.CurrentSessionName}{InstantCodeClient.Instance.CurrentSessionId:X}.zip"));
+                $"{InstantCodeClient.Instance.CurrentSession.Name}{InstantCodeClient.Instance.CurrentSession.Id:X}.zip"));
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             progressDialog.IsIntermediate = false;
         }
@@ -68,21 +70,20 @@ namespace InstantCode.Client.Network
             currentStream.Write(p05StreamData.Data, 0, p05StreamData.Data.Length);
             streamRead += p05StreamData.Data.Length;
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            progressDialog.Value = (int) (streamRead / (double) streamLength * 100);
+            progressDialog.Value = (int)(streamRead / (double)streamLength * 100);
         }
 
         public async void HandleP06CloseStream(P06CloseStream p06CloseStream)
         {
             currentStream.Close();
-            var zipFile = Path.Combine(FolderPath,
-                $"{InstantCodeClient.Instance.CurrentSessionName}{InstantCodeClient.Instance.CurrentSessionId:X}.zip");
             var targetFolder = Path.Combine(FolderPath,
-                $"{InstantCodeClient.Instance.CurrentSessionName}{InstantCodeClient.Instance.CurrentSessionId:X}");
+                $"{InstantCodeClient.Instance.CurrentSession.Name}{InstantCodeClient.Instance.CurrentSession.Id:X}");
+            var zipFile = targetFolder + ".zip";
 
             if (!Directory.Exists(targetFolder))
                 Directory.CreateDirectory(targetFolder);
 
-            ZipFile.ExtractToDirectory(zipFile,targetFolder);
+            ZipFile.ExtractToDirectory(zipFile, targetFolder);
             var solutionFile = Directory.GetFiles(targetFolder).Single(f => f.EndsWith(".sln"));
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -96,17 +97,36 @@ namespace InstantCode.Client.Network
 
         public void HandleP07CodeChange(P07CodeChange p07CodeChange)
         {
-            
+            DocumentModifier.Apply(new DocumentModification { File = p07CodeChange.File, Index = p07CodeChange.Index, Modification = p07CodeChange.Char });
         }
 
         public void HandleP08CursorPosition(P08CursorPosition p08CursorPosition)
         {
-            
+            InstantCodeClient.Instance.CurrentSession?.UpdateCursors(p08CursorPosition);
         }
 
-        public void HandleP09Save(P09Save p09Save)
+        public async void HandleP09Save(P09Save p09Save)
         {
-            
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var dte = (DTE)Package.GetGlobalService(typeof(DTE));
+
+            var solution = dte.Solution;
+            if (!solution.Saved)
+                solution.SaveAs(dte.Solution.FileName);
+
+            for (var i = 1; i <= solution.Projects.Count; i++)
+            {
+                var project = solution.Projects.Item(i);
+                if (!project.Saved)
+                    project.Save();
+                for (var j = 1; j <= project.ProjectItems.Count; j++)
+                {
+                    var projectItem = project.ProjectItems.Item(j);
+                    if (!projectItem.Saved)
+                        projectItem.Save();
+                }
+            }
+
         }
 
         public async void HandleP0AUserList(P0AUserList p0AUserList)

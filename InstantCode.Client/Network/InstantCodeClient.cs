@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using InstantCode.Client.GUI;
 using InstantCode.Client.GUI.Pages;
+using InstantCode.Client.Model;
 using InstantCode.Protocol;
 using InstantCode.Protocol.Crypto;
 using InstantCode.Protocol.IO;
@@ -17,21 +18,17 @@ namespace InstantCode.Client.Network
     {
         public static InstantCodeClient Instance = new InstantCodeClient();
 
-        private TcpClient tcpClient;
-        private FixedDataStream dataStream;
-
-        private PacketHandler packetHandler;
-
-        private PacketAwaitItem awaitItem = new PacketAwaitItem();
-
         public string CurrentUsername { get; set; }
-        public string[] CurrentSessionParticipants { get; set; }
-        public string CurrentSessionName { get; set; }
-        public int CurrentSessionId { get; set; }
-
+        public Session CurrentSession { get; set; }
         public Action DisconnectHandler { get; set; }
 
-        private bool forcedClose = false;
+        private TcpClient tcpClient;
+        private FixedDataStream dataStream;
+        private PacketHandler packetHandler;
+
+        private readonly PacketAwaitHandler awaitHandler = new PacketAwaitHandler();
+
+        private bool forcedClose;
 
         private static readonly IPacket[] RegisteredPackets =
         {
@@ -49,10 +46,10 @@ namespace InstantCode.Client.Network
 
         public async Task<T> WaitForReplyAsync<T>() where T : IPacket
         {
-            awaitItem.Reset();
-            awaitItem.PacketId = Activator.CreateInstance<T>().Id;
-            await awaitItem.WaitHandle.WaitOneAsync();
-            return (T)awaitItem.Packet;
+            awaitHandler.Reset();
+            awaitHandler.PacketId = Activator.CreateInstance<T>().Id;
+            await awaitHandler.WaitHandle.WaitOneAsync();
+            return (T)awaitHandler.Packet;
         }
 
         public async Task ConnectAsync(IPageSwitcher pageSwitcher, string server, int port, string password)
@@ -105,10 +102,10 @@ namespace InstantCode.Client.Network
                 pack.Read(packetContent);
                 pack.Handle(packetHandler);
 
-                if (pack.Id == awaitItem.PacketId)
+                if (pack.Id == awaitHandler.PacketId)
                 {
-                    awaitItem.Packet = pack;
-                    awaitItem.WaitHandle.Set();
+                    awaitHandler.Packet = pack;
+                    awaitHandler.WaitHandle.Set();
                 }
                 break;
             }
@@ -118,9 +115,7 @@ namespace InstantCode.Client.Network
         {
             tcpClient.Close();
             tcpClient.Dispose();
-            CurrentSessionId = 0;
-            CurrentSessionName = null;
-            CurrentSessionParticipants = null;
+            CurrentSession = null;
             forcedClose = true;
         }
 

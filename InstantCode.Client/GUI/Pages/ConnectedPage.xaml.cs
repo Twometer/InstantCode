@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Controls;
 using EnvDTE;
 using InstantCode.Client.GUI.Model;
+using InstantCode.Client.Model;
 using InstantCode.Client.Network;
 using InstantCode.Protocol.Packets;
 using Microsoft.VisualStudio.Shell;
@@ -54,7 +55,7 @@ namespace InstantCode.Client.GUI.Pages
                 return;
             }
 
-            var participants = OnlineUsersBox.SelectedItems.Cast<string>().Concat(new[] {InstantCodeClient.Instance.CurrentUsername}).ToArray();
+            var participants = OnlineUsersBox.SelectedItems.Cast<string>().Concat(new[] { InstantCodeClient.Instance.CurrentUsername }).ToArray();
 
             var sessionName = solution.Projects.Item(1).Name;
             InstantCodeClient.Instance.SendPacket(new P02NewSession(sessionName, participants));
@@ -66,9 +67,7 @@ namespace InstantCode.Client.GUI.Pages
                 return;
             }
 
-            InstantCodeClient.Instance.CurrentSessionName = sessionName;
-            InstantCodeClient.Instance.CurrentSessionParticipants = participants;
-            InstantCodeClient.Instance.CurrentSessionId = statePacket.Payload;
+            InstantCodeClient.Instance.CurrentSession = new Session { Id = statePacket.Payload, Name = sessionName, Participants = participants };
 
             progressDialog.StatusMessage = "Compressing project...";
             var solutionFolder = new FileInfo(solution.FileName).Directory;

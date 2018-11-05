@@ -3,7 +3,7 @@ using InstantCode.Protocol;
 
 namespace InstantCode.Client.Network
 {
-    public class PacketAwaitItem
+    public class PacketAwaitHandler
     {
         public ManualResetEvent WaitHandle { get; } = new ManualResetEvent(false);
         public int PacketId { get; set; }
@@ -13,6 +13,5 @@ namespace InstantCode.Client.Network
         {
             WaitHandle.Reset();
         }
-
     }
 }

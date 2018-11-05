@@ -68,5 +68,10 @@ namespace InstantCode.Client.GUI.Pages
                 progressDialog.Close();
             }
         }
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO
+        }
     }
 }

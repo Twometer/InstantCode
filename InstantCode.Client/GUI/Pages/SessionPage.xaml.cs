@@ -24,10 +24,10 @@ namespace InstantCode.Client.GUI.Pages
         public SessionPage()
         {
             InitializeComponent();
-            Header.Content = $"Connected to session '{InstantCodeClient.Instance.CurrentSessionName}'";
+            Header.Content = $"Connected to session '{InstantCodeClient.Instance.CurrentSession.Name}'";
 
             SessionParticipantsBox.Items.Add(InstantCodeClient.Instance.CurrentUsername + " (Me)");
-            foreach (var part in InstantCodeClient.Instance.CurrentSessionParticipants)
+            foreach (var part in InstantCodeClient.Instance.CurrentSession.Participants)
                 if (part != InstantCodeClient.Instance.CurrentUsername)
                     SessionParticipantsBox.Items.Add(part);
         }
