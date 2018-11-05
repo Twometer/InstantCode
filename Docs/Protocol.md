@@ -79,7 +79,7 @@ No content
 #### 0x07 CodeChange (C<->S)
 Notifys other clients in a session about code changes.
 ```
-<Int SessionId><String Sender><String File><Int Index><String Char>
+<Int SessionId><String Sender><String File><Int StartIndex><Int EndIndex><String Data>
 ```
 
 #### 0x08 CursorPosition (C<->S)

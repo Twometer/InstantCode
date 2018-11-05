@@ -1,4 +1,10 @@
 ﻿using System.ComponentModel.Composition;
+using System.Windows;
+using EnvDTE;
+using InstantCode.Client.Network;
+using InstantCode.Client.Utils;
+using InstantCode.Protocol.Packets;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -27,6 +33,8 @@ namespace InstantCode.Client.Editor
 
 #pragma warning restore 649, 169
 
+        private DTE dte;
+
         #region IWpfTextViewCreationListener
 
         /// <summary>
@@ -36,7 +44,19 @@ namespace InstantCode.Client.Editor
         /// <param name="textView">The <see cref="IWpfTextView"/> upon which the adornment should be placed</param>
         public void TextViewCreated(IWpfTextView textView)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)
+            dte = (DTE)Package.GetGlobalService(typeof(DTE));
+            textView.TextBuffer.Changed += (sender, args) =>
+            {
+                if (args.Changes.Count == 0) return;
+                var change = args.Changes[0];
+                InstantCodeClient.Instance.SendPacket(new P07CodeChange(InstantCodeClient.Instance.CurrentSession.Id,
+                    InstantCodeClient.Instance.CurrentUsername,
+                    dte.ActiveDocument.ProjectItem.GetRelativePath(dte.Solution), change.OldSpan.Start,
+                    change.OldSpan.End, change.NewText));
+                //MessageBox.Show(change.OldSpan.Start + "; " + change.OldSpan.End + "; " + change.NewText);
+            };
             new CursorTextAdornment(textView);
         }
 

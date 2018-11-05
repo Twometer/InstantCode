@@ -97,7 +97,7 @@ namespace InstantCode.Client.Network
 
         public void HandleP07CodeChange(P07CodeChange p07CodeChange)
         {
-            DocumentModifier.Apply(new DocumentModification { File = p07CodeChange.File, Index = p07CodeChange.Index, Modification = p07CodeChange.Char });
+            DocumentModifier.Apply(new DocumentModification { File = p07CodeChange.File, StartIndex = p07CodeChange.StartIndex, EndIndex = p07CodeChange.EndIndex, Data = p07CodeChange.Data });
         }
 
         public void HandleP08CursorPosition(P08CursorPosition p08CursorPosition)

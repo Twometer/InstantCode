@@ -57,6 +57,7 @@
     <Compile Include="Editor\CursorTextAdornment.cs" />
     <Compile Include="Editor\CursorTextAdornmentTextViewCreationListener.cs" />
     <Compile Include="Editor\DocumentModifier.cs" />
+    <Compile Include="Editor\EditorListener.cs" />
     <Compile Include="GUI\AddServerDialog.xaml.cs">
       <DependentUpon>AddServerDialog.xaml</DependentUpon>
     </Compile>

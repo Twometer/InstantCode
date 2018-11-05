@@ -10,21 +10,23 @@ namespace InstantCode.Protocol.Packets
         public int SessionId { get; set; }
         public string Sender { get; set; }
         public string File { get; set; }
-        public int Index { get; set; }
-        public string Char { get; set; }
+        public int StartIndex { get; set; }
+        public int EndIndex { get; set; }
+        public string Data { get; set; }
 
         public P07CodeChange()
         {
 
         }
 
-        public P07CodeChange(int sessionId, string sender, string file, int index, string @char)
+        public P07CodeChange(int sessionId, string sender, string file, int startIndex, int endIndex, string data)
         {
             SessionId = sessionId;
             Sender = sender;
             File = file;
-            Index = index;
-            Char = @char;
+            StartIndex = startIndex;
+            EndIndex = endIndex;
+            Data = data;
         }
 
         public void Read(PacketBuffer buffer)
@@ -32,8 +34,9 @@ namespace InstantCode.Protocol.Packets
             SessionId = buffer.ReadInt();
             Sender = buffer.ReadString();
             File = buffer.ReadString();
-            Index = buffer.ReadInt();
-            Char = buffer.ReadString();
+            StartIndex = buffer.ReadInt();
+            EndIndex = buffer.ReadInt();
+            Data = buffer.ReadString();
         }
 
         public void Write(PacketBuffer buffer)
@@ -41,8 +44,9 @@ namespace InstantCode.Protocol.Packets
             buffer.WriteInt(SessionId);
             buffer.WriteString(Sender);
             buffer.WriteString(File);
-            buffer.WriteInt(Index);
-            buffer.WriteString(Char);
+            buffer.WriteInt(StartIndex);
+            buffer.WriteInt(EndIndex);
+            buffer.WriteString(Data);
         }
 
         public void Handle(INetHandler netHandler)
