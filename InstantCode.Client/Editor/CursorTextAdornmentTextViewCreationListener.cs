@@ -37,6 +37,8 @@ namespace InstantCode.Client.Editor
 
         #region IWpfTextViewCreationListener
 
+        public static bool IgnoreChanges = false;
+
         /// <summary>
         /// Called when a text view having matching roles is created over a text data model having a matching content type.
         /// Instantiates a CursorTextAdornment manager when the textView is created.
@@ -49,6 +51,8 @@ namespace InstantCode.Client.Editor
             dte = (DTE)Package.GetGlobalService(typeof(DTE));
             textView.TextBuffer.Changed += (sender, args) =>
             {
+                if (IgnoreChanges)
+                    return;
                 if (args.Changes.Count == 0) return;
                 var change = args.Changes[0];
                 InstantCodeClient.Instance.SendPacket(new P07CodeChange(InstantCodeClient.Instance.CurrentSession.Id,
@@ -57,7 +61,7 @@ namespace InstantCode.Client.Editor
                     change.OldSpan.End, change.NewText));
                 //MessageBox.Show(change.OldSpan.Start + "; " + change.OldSpan.End + "; " + change.NewText);
             };
-            new CursorTextAdornment(textView);
+            //new CursorTextAdornment(textView);
         }
 
         #endregion
